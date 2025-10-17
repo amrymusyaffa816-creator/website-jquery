@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>menambahkan Produk</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        background: #eef3f7;
+      }
+      .sidebar {
+        width: 230px;
+        background: linear-gradient(180deg, #0059b3, #00bfff);
+        color: white;
+        height: 100vh;
+        position: fixed;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
+        border-right: 2px solid #0099cc;
+      }
+      .sidebar h2 {
+        text-align: center;
+        padding: 22px;
+        font-weight: 700;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        font-size: 20px;
+      }
+      .sidebar a {
+        color: white;
+        text-decoration: none;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.3s;
+        font-size: 15px;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        background: rgba(255, 255, 255, 0.2);
+        border-left: 5px solid #fff;
+        transform: translateX(5px);
+      }
+      .content {
+        margin-left: 230px;
+        padding: 30px;
+      }
+      .header {
+        background: #00bfff;
+        padding: 18px 25px;
+        border-radius: 10px;
+        color: white;
+        font-weight: bold;
+        font-size: 1.3em;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        margin-bottom: 20px;
+      }
+      h2 {
+        border-bottom: 3px solid #00bfff;
+        display: inline-block;
+        padding-bottom: 5px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background: #00bfff;
+        color: white;
+      }
+      .footer {
+        text-align: center;
+        padding: 15px;
+        color: #777;
+        margin-top: 30px;
+      }
+      input,
+      select {
+        padding: 8px;
+        margin: 5px 0;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 6px;
+        background: #00bfff;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #008fcc;
+      }
+      img.preview {
+        width: 60px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2><i class="fa-solid fa-box"></i> ProdukKu</h2>
+      <a href="#" class="active" id="homeLink"
+        ><i class="fa-solid fa-house"></i> Home</a
+      >
+      <a href="#" id="barangLink"><i class="fa-solid fa-cubes"></i> Produk</a>
+      <a href="#" id="tentangLink"
+        ><i class="fa-solid fa-circle-info"></i> Tentang</a
+      >
+      <a href="#" id="kontakLink"><i class="fa-solid fa-phone"></i> Kontak</a>
+    </div>
+
+    <div class="content">
+      <div class="header">
+        <i class="fa-solid fa-gauge"></i> Dashboard Manajemen Produk
+      </div>
+
+      <div id="home" class="card">
+        <h2>Selamat Datang</h2>
+        <p>
+          Selamat datang di dashboard manajemen produk tampilan web ini dapat
+          membantu Anda mengelola produk dengan lebih efisien .
+        </p>
+      </div>
+
+      <div id="barang" class="card" style="display: none">
+        <h2>Data Produk</h2>
+        <form id="productForm">
+          <label>Nama Produk:</label>
+          <input type="text" id="nama" required />
+          <label>Kategori:</label>
+          <input type="text" id="kategori" required />
+          <label>Harga:</label>
+          <input type="number" id="harga" required />
+          <label>Stok:</label>
+          <input type="number" id="stok" required />
+          <label>Foto Produk:</label>
+          <input type="file" id="foto" accept="image/*" />
+          <button type="submit">Tambah Produk</button>
+          <button type="button" id="exportPDF">Ekspor ke PDF</button>
+        </form>
+
+        <table id="produkTable">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama Produk</th>
+              <th>Kategori</th>
+              <th>Harga</th>
+              <th>Stok</th>
+              <th>Foto</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div id="tentang" class="card" style="display: none">
+        <h2>Tentang Kami</h2>
+        <p>
+          Aplikasi ProdukKu membantu UMKM mengelola data produk dengan cepat dan
+          efisien.
+        </p>
+      </div>
+
+      <div id="kontak" class="card" style="display: none">
+        <h2>Kontak Kami</h2>
+        <p><i class="fa-solid fa-envelope"></i> support@produkku.com</p>
+      </div>
+
+      <div class="footer">&copy; 2025 ProdukKu. Semua Hak Dilindungi.</div>
+    </div>
+
+    <script>
+      $(document).ready(function () {
+        function showSection(id) {
+          $(".card").hide();
+          $(id).fadeIn(400);
+          $(".sidebar a").removeClass("active");
+          if (id === "#home") $("#homeLink").addClass("active");
+          if (id === "#barang") $("#barangLink").addClass("active");
+          if (id === "#tentang") $("#tentangLink").addClass("active");
+          if (id === "#kontak") $("#kontakLink").addClass("active");
+        }
+
+        $("#homeLink").click(() => showSection("#home"));
+        $("#barangLink").click(() => showSection("#barang"));
+        $("#tentangLink").click(() => showSection("#tentang"));
+        $("#kontakLink").click(() => showSection("#kontak"));
+
+        let no = 1;
+        $("#productForm").submit(function (e) {
+          e.preventDefault();
+          const nama = $("#nama").val();
+          const kategori = $("#kategori").val();
+          const harga = $("#harga").val();
+          const stok = $("#stok").val();
+          const file = $("#foto")[0].files[0];
+          let fotoURL = "";
+          if (file) fotoURL = URL.createObjectURL(file);
+
+          $("#produkTable tbody").append(`
+            <tr>
+              <td>${no++}</td>
+              <td>${nama}</td>
+              <td>${kategori}</td>
+              <td>${harga}</td>
+              <td>${stok}</td>
+              <td>${file ? `<img src="${fotoURL}" class="preview">` : "-"}</td>
+              <td><button class="hapus">Hapus</button></td>
+            </tr>
+          `);
+          this.reset();
+        });
+
+        $(document).on("click", ".hapus", function () {
+          $(this).closest("tr").remove();
+        });
+
+        $("#exportPDF").click(function () {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+          doc.text("Laporan Data Produk", 14, 15);
+          doc.autoTable({ html: "#produkTable", startY: 20 });
+          doc.save("Data_Produk.pdf");
+        });
+      });
+    </script>
+  </body>
+</html>
