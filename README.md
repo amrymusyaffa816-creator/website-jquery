@@ -1,2 +1,2 @@
 # website-jquery
-jquery tema
+jquery web fungsional
